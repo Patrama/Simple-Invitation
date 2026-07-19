@@ -9,9 +9,9 @@ window.EVENT = {
 
   // "single"  -> one name (birthday, graduation, solo event…)
   // "double"  -> two names joined by an ampersand (wedding, engagement…)
-  mode: "double",
+  mode: "single",
 
-  eyebrow: "You're invited to celebrate",
+  eyebrow: "This is my two year birthday invitation",
   names: {
     single: "Alex Rivera",
     first: "Alex",
@@ -19,15 +19,15 @@ window.EVENT = {
   },
 
   // Shown under the name(s) on the cover panel.
-  tagline: "We're getting married and we want you there.",
+  tagline: "Come celebrate my special day!",
 
   // ISO 8601, include timezone offset so the countdown is correct
   // for guests in other timezones.
-  dateTimeISO: "2026-12-12T16:00:00+07:00",
+  dateTimeISO: "2026-07-24T16:00:00+07:00",
 
   // Human-readable strings shown near the countdown (kept separate
   // from dateTimeISO so wording can differ from the raw date).
-  dateLabel: "Saturday, 12 December 2026",
+  dateLabel: "Saturday, 24 July 2026",
   timeLabel: "4:00 PM – Reception to follow",
 
   location: {
@@ -41,7 +41,7 @@ window.EVENT = {
   // RSVP submissions are posted to a Google Apps Script Web App,
   // which appends each response as a row in a Google Sheet.
   // See /other/README.md + /other/apps-script.gs for setup.
-  rsvpEndpoint: "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE",
+  rsvpEndpoint: "https://script.google.com/macros/s/AKfycbziKVAZO-LRzPGpFcyEL-LGLD_6WsHqappu-TQrB6YEqANrHAqFcF16Xum1HvHo6JH5/exec",
 
   // Controls the public "who's coming" guestbook panel, which reads
   // back names, attendance, and comments from the same Sheet.
@@ -65,26 +65,26 @@ window.EVENT = {
       detail: "BCA · 123 456 7890",
       note: "Please include your name in the transfer note."
     },
-    {
-      type: "paypal",
-      label: "PayPal",
-      name: "Alex & Jordan",
-      detail: "paypal.me/alexandjordan",
-      note: ""
-    },
+    // {
+    //   type: "paypal",
+    //   label: "PayPal",
+    //   name: "Alex & Jordan",
+    //   detail: "paypal.me/alexandjordan",
+    //   note: ""
+    // },
+    // {
+    //   type: "custom",
+    //   label: "Registry",
+    //   name: "Our wishlist",
+    //   detail: "example.com/registry/alex-jordan",
+    //   note: ""
+    // },
     {
       type: "qr",
       label: "QRIS",
       name: "Scan to send a gift",
       detail: "img/gift-qr-placeholder.svg",
       note: "Works with any QRIS-supported e-wallet or banking app."
-    },
-    {
-      type: "custom",
-      label: "Registry",
-      name: "Our wishlist",
-      detail: "example.com/registry/alex-jordan",
-      note: ""
     }
   ],
 
@@ -97,7 +97,7 @@ window.EVENT = {
   // /audio folder — keep it short and loop-friendly, and please only
   // use music you have the rights to use.
   music: {
-    src: "img/background-music.mp3",
+    src: "img/bg.mp3",
     title: "Background music"
   },
 
@@ -105,7 +105,7 @@ window.EVENT = {
   // character on the cover panel. Set kind to "video" or "image".
   feature: {
     kind: "image",
-    src: "img/feature-placeholder.svg",
+    src: "img/Ptr Junior.webp",
     alt: "Photo of the celebrating couple"
   },
 
@@ -122,6 +122,6 @@ window.EVENT = {
     // layers moving less than foreground ones, which is what actually
     // reads as depth — a flat px boost added equally to every layer
     // instead flattens them to the same distance and kills the effect.
-    strength: 1
+    strength: 3
   }
 };
