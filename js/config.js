@@ -11,15 +11,15 @@ window.EVENT = {
   // "double"  -> two names joined by an ampersand (wedding, engagement…)
   mode: "single",
 
-  eyebrow: "it's my birthday for turning two",
+  eyebrow: "it's my turning two birthday",
   names: {
     single: "Zayn Elhaziq Agatra",
-    first: "Zayn",
-    second: "Elhaziq"
+    first: "Alex",
+    second: "Jordan"
   },
 
   // Shown under the name(s) on the cover panel.
-  tagline: "Join me for a special day!",
+  tagline: "Come celebrate my special day!",
 
   // ISO 8601, include timezone offset so the countdown is correct
   // for guests in other timezones.
@@ -43,6 +43,17 @@ window.EVENT = {
   // See /other/README.md + /other/apps-script.gs for setup.
   rsvpEndpoint: "https://script.google.com/macros/s/AKfycbziKVAZO-LRzPGpFcyEL-LGLD_6WsHqappu-TQrB6YEqANrHAqFcF16Xum1HvHo6JH5/exec",
 
+  // Controls the public "who's coming" guestbook panel, which reads
+  // back names, attendance, and comments from the same Sheet.
+  //   enabled: false  -> the panel is left out of the site entirely
+  //   openByDefault:  true shows the list right away; false requires
+  //                   a guest to tap "Show guest list" first (the
+  //                   list is only fetched at that point either way).
+  guestbook: {
+    enabled: true,
+    openByDefault: false
+  },
+
   // 1–4 entries. The layout adapts automatically to however many
   // you provide (1 spans full width, 4 sit in a tidy row on desktop
   // and stack on mobile).
@@ -50,15 +61,15 @@ window.EVENT = {
     {
       type: "bank",
       label: "Bank Transfer",
-      name: "Zayn Elhaziq Agatra",
+      name: "Alex Rivera",
       detail: "BCA · 123 456 7890",
       note: "Please include your name in the transfer note."
     },
     {
       type: "paypal",
       label: "PayPal",
-      name: "Zayn Elhaziq Agatra",
-      detail: "paypal.me/zaynelhaziq",
+      name: "Alex & Jordan",
+      detail: "paypal.me/alexandjordan",
       note: ""
     },
     {
@@ -72,7 +83,7 @@ window.EVENT = {
       type: "custom",
       label: "Registry",
       name: "Our wishlist",
-      detail: "example.com/registry/zaynelhaziq",
+      detail: "example.com/registry/alex-jordan",
       note: ""
     }
   ],

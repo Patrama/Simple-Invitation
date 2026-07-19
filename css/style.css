@@ -144,7 +144,6 @@ button { font-family: inherit; }
   inset: -6%;
   z-index: 1;
   pointer-events: none;
-  transition: transform 0.15s linear;
   will-change: transform;
 }
 .parallax-layer.is-fg { z-index: 3; }
@@ -411,6 +410,67 @@ h1.title .amp {
   border: none;
   cursor: pointer;
   padding: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   GUESTBOOK — a contained, internally-scrollable list.
+   The page itself never scrolls; this small region is the one
+   deliberate exception, same as a native app's modal sheet would be.
+───────────────────────────────────────────────────────────── */
+.guestbook {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.guestbook__status {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+.guestbook__status[data-state="err"] { color: var(--coral); }
+.guestbook__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-height: min(42vh, 320px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.guestbook__item {
+  background: var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  padding: 10px 14px;
+  text-align: left;
+}
+.guestbook__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.guestbook__name { font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; }
+.guestbook__badge {
+  flex: none;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.2em 0.6em;
+  border-radius: 999px;
+  color: var(--bg-elevated);
+  background: var(--ink-soft);
+}
+.guestbook__badge[data-status="will"] { background: var(--accent); }
+.guestbook__badge[data-status="maybe"] { background: var(--accent-2); }
+.guestbook__comment {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
 }
 
 /* ─────────────────────────────────────────────────────────────

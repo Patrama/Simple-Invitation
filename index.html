@@ -35,31 +35,33 @@
 
     <!-- 1 · COVER -->
     <section class="panel cover" data-panel>
-      <div class="parallax-layer" data-depth="0.02" aria-hidden="true">
+      <div class="parallax-layer" data-depth="22" aria-hidden="true">
         <svg viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
-          <circle cx="60" cy="120" r="70" fill="var(--accent)" opacity="0.08"/>
-          <circle cx="340" cy="640" r="90" fill="var(--accent-2)" opacity="0.10"/>
+          <circle cx="60" cy="120" r="70" fill="var(--accent)" opacity="0.16"/>
+          <circle cx="340" cy="640" r="90" fill="var(--accent-2)" opacity="0.18"/>
         </svg>
       </div>
-      <div class="parallax-layer is-fg" data-depth="0.09" aria-hidden="true">
+      <div class="parallax-layer is-fg" data-depth="48" aria-hidden="true">
         <svg viewBox="0 0 400 800" style="width:100%;height:100%">
-          <g fill="var(--accent-2)" opacity="0.7">
-            <circle cx="40" cy="90" r="4"/><circle cx="90" cy="60" r="3"/>
-            <circle cx="360" cy="110" r="4"/><circle cx="320" cy="70" r="3"/>
-            <circle cx="30" cy="700" r="3"/><circle cx="370" cy="740" r="4"/>
+          <g fill="var(--accent-2)" opacity="0.85">
+            <circle cx="40" cy="90" r="5"/><circle cx="90" cy="60" r="4"/>
+            <circle cx="360" cy="110" r="5"/><circle cx="320" cy="70" r="4"/>
+            <circle cx="30" cy="700" r="4"/><circle cx="370" cy="740" r="5"/>
           </g>
-          <g fill="var(--accent)" opacity="0.6">
-            <rect x="60" y="130" width="6" height="6" rx="1" transform="rotate(20 60 130)"/>
-            <rect x="340" y="150" width="6" height="6" rx="1" transform="rotate(-15 340 150)"/>
-            <rect x="70" y="660" width="6" height="6" rx="1" transform="rotate(35 70 660)"/>
+          <g fill="var(--accent)" opacity="0.75">
+            <rect x="60" y="130" width="8" height="8" rx="1" transform="rotate(20 60 130)"/>
+            <rect x="340" y="150" width="8" height="8" rx="1" transform="rotate(-15 340 150)"/>
+            <rect x="70" y="660" width="8" height="8" rx="1" transform="rotate(35 70 660)"/>
           </g>
         </svg>
       </div>
       <div class="panel__inner">
         <p class="eyebrow" data-copy="eyebrow"></p>
-        <div class="arch-frame">
-          <div class="arch-frame__ring" aria-hidden="true"></div>
-          <div class="arch-frame__stage" id="feature-stage"></div>
+        <div class="parallax-layer" data-depth="14" style="position:relative;inset:auto">
+          <div class="arch-frame">
+            <div class="arch-frame__ring" aria-hidden="true"></div>
+            <div class="arch-frame__stage" id="feature-stage"></div>
+          </div>
         </div>
         <h1 class="title" id="title-block"></h1>
         <p class="lede" data-copy="tagline"></p>
@@ -68,7 +70,7 @@
 
     <!-- 2 · COUNTDOWN -->
     <section class="panel" data-panel>
-      <div class="parallax-layer" data-depth="0.05" aria-hidden="true">
+      <div class="parallax-layer" data-depth="26" aria-hidden="true">
         <svg viewBox="0 0 400 800" style="width:100%;height:100%">
           <path d="M0 620 Q100 560 200 620 T400 620 V800 H0 Z" fill="var(--paper)" opacity="0.06"/>
         </svg>
@@ -91,7 +93,7 @@
 
     <!-- 3 · LOCATION -->
     <section class="panel" data-panel>
-      <div class="parallax-layer" data-depth="0.05" aria-hidden="true">
+      <div class="parallax-layer" data-depth="26" aria-hidden="true">
         <svg viewBox="0 0 400 800" style="width:100%;height:100%">
           <path d="M0 200 Q200 260 400 200 V0 H0 Z" fill="var(--accent)" opacity="0.06"/>
         </svg>
@@ -109,6 +111,12 @@
 
     <!-- 4 · RSVP -->
     <section class="panel" data-panel>
+      <div class="parallax-layer" data-depth="24" aria-hidden="true">
+        <svg viewBox="0 0 400 800" style="width:100%;height:100%">
+          <circle cx="350" cy="90" r="60" fill="var(--accent-2)" opacity="0.14"/>
+          <circle cx="40" cy="720" r="80" fill="var(--accent)" opacity="0.12"/>
+        </svg>
+      </div>
       <div class="panel__inner">
         <p class="eyebrow">Kindly reply</p>
         <h2>Will you join us?</h2>
@@ -134,6 +142,12 @@
 
     <!-- 5 · GIFTS -->
     <section class="panel" data-panel>
+      <div class="parallax-layer" data-depth="24" aria-hidden="true">
+        <svg viewBox="0 0 400 800" style="width:100%;height:100%">
+          <circle cx="50" cy="100" r="55" fill="var(--accent)" opacity="0.12"/>
+          <circle cx="360" cy="700" r="70" fill="var(--accent-2)" opacity="0.14"/>
+        </svg>
+      </div>
       <div class="panel__inner" style="width:min(680px,100%)">
         <p class="eyebrow">With love, if you wish</p>
         <h2>A gift</h2>
@@ -141,9 +155,29 @@
       </div>
     </section>
 
-    <!-- 6 · THANK YOU -->
+    <!-- 6 · GUESTBOOK (who's coming) -->
+    <section class="panel" data-panel data-guestbook-panel hidden>
+      <div class="parallax-layer" data-depth="24" aria-hidden="true">
+        <svg viewBox="0 0 400 800" style="width:100%;height:100%">
+          <circle cx="40" cy="110" r="55" fill="var(--accent-2)" opacity="0.12"/>
+          <circle cx="350" cy="710" r="65" fill="var(--accent)" opacity="0.12"/>
+        </svg>
+      </div>
+      <div class="panel__inner">
+        <p class="eyebrow">See who's celebrating</p>
+        <h2>Guest list</h2>
+        <p class="lede">Visible to anyone with this link — shown only if a guest chooses to reveal it.</p>
+        <button type="button" class="btn btn--ghost" id="guestbook-toggle">Show guest list</button>
+        <div class="guestbook" id="guestbook" hidden>
+          <div class="guestbook__status" id="guestbook-status">Loading…</div>
+          <ul class="guestbook__list" id="guestbook-list"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 · THANK YOU -->
     <section class="panel thankyou" data-panel>
-      <div class="parallax-layer" data-depth="0.06" aria-hidden="true">
+      <div class="parallax-layer" data-depth="30" aria-hidden="true">
         <svg viewBox="0 0 400 800" style="width:100%;height:100%">
           <g fill="var(--accent-2)" opacity="0.5">
             <circle cx="60" cy="120" r="4"/><circle cx="340" cy="160" r="3"/>

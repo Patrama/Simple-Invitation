@@ -154,39 +154,65 @@
 
   /* ───────────────────────── PARALLAX ───────────────────────── */
   function initParallax() {
-    if (reduceMotion) return;
-    var layers = document.querySelectorAll(".parallax-layer");
+    var layers = Array.prototype.slice.call(document.querySelectorAll(".parallax-layer"));
+    if (reduceMotion || !layers.length) return;
 
-    function apply(nx, ny) { // nx, ny in [-1, 1]
+    // data-depth is now a direct max-pixel offset (not a fraction), so
+    // movement is actually visible: background blobs drift ~20-30px,
+    // foreground confetti / the photo frame swing further, ~35-70px.
+    var current = { nx: 0, ny: 0 };
+    var targetState = { nx: 0, ny: 0 };
+    var raf = null;
+
+    function render() {
+      // ease toward the target each frame — smoother than snapping
+      // straight to the pointer/tilt reading, and reads as "depth"
+      // rather than a jitter.
+      current.nx += (targetState.nx - current.nx) * 0.12;
+      current.ny += (targetState.ny - current.ny) * 0.12;
       layers.forEach(function (layer) {
-        var depth = parseFloat(layer.getAttribute("data-depth")) || 0.04;
-        var x = nx * depth * 100;
-        var y = ny * depth * 100;
-        layer.style.transform = "translate3d(" + x + "px," + y + "px,0)";
+        var depth = parseFloat(layer.getAttribute("data-depth")) || 20;
+        var x = current.nx * depth;
+        var y = current.ny * depth;
+        layer.style.transform = "translate3d(" + x.toFixed(1) + "px," + y.toFixed(1) + "px,0)";
       });
+      raf = requestAnimationFrame(render);
+    }
+    raf = requestAnimationFrame(render);
+
+    function setTarget(nx, ny) {
+      targetState.nx = Math.max(-1, Math.min(1, nx));
+      targetState.ny = Math.max(-1, Math.min(1, ny));
     }
 
+    // Desktop: cursor position relative to viewport center
     window.addEventListener("mousemove", function (e) {
       var nx = (e.clientX / window.innerWidth) * 2 - 1;
       var ny = (e.clientY / window.innerHeight) * 2 - 1;
-      apply(nx, ny);
+      setTarget(nx, ny);
     });
+    // Recenter if the cursor leaves the window
+    window.addEventListener("mouseleave", function () { setTarget(0, 0); });
 
-    var gyroActive = false;
+    // Mobile: device tilt. beta (front/back) and gamma (left/right).
+    var gyroBaseline = null;
     function onOrientation(e) {
       if (e.beta === null || e.gamma === null) return;
-      gyroActive = true;
-      var nx = Math.max(-1, Math.min(1, e.gamma / 30));
-      var ny = Math.max(-1, Math.min(1, (e.beta - 45) / 30));
-      apply(nx, ny);
+      // Calibrate around whatever angle the guest is already holding
+      // the phone at, so it doesn't assume one fixed "neutral" tilt.
+      if (!gyroBaseline) gyroBaseline = { beta: e.beta, gamma: e.gamma };
+      var nx = (e.gamma - gyroBaseline.gamma) / 20;
+      var ny = (e.beta - gyroBaseline.beta) / 20;
+      setTarget(nx, ny);
     }
     window.__enableGyro = function () {
       if (typeof DeviceOrientationEvent !== "undefined" &&
           typeof DeviceOrientationEvent.requestPermission === "function") {
+        // iOS 13+: must be requested directly from a user-gesture handler.
         DeviceOrientationEvent.requestPermission().then(function (state) {
           if (state === "granted") window.addEventListener("deviceorientation", onOrientation);
         }).catch(function () {});
-      } else {
+      } else if (typeof DeviceOrientationEvent !== "undefined") {
         window.addEventListener("deviceorientation", onOrientation);
       }
     };
@@ -311,6 +337,87 @@
     });
   }
 
+  /* ───────────────────────── GUESTBOOK ───────────────────────── */
+  // Runs before initPagination so the panel count / dot-nav reflect
+  // whether this feature is on at all.
+  function prepareGuestbookPanel() {
+    var panel = document.querySelector("[data-guestbook-panel]");
+    if (!panel) return;
+    var enabled = CFG.guestbook && CFG.guestbook.enabled;
+    if (!enabled) { panel.remove(); return; }
+    panel.hidden = false;
+  }
+
+  function statusMeta(attendance) {
+    var a = (attendance || "").toLowerCase();
+    if (a.indexOf("will") > -1) return { key: "will", text: "Will attend" };
+    if (a.indexOf("maybe") > -1) return { key: "maybe", text: "Maybe" };
+    return { key: "cant", text: "Can't attend" };
+  }
+
+  function initGuestbook() {
+    var panel = document.querySelector("[data-guestbook-panel]");
+    if (!panel) return; // feature disabled, nothing to wire up
+
+    var toggle = document.getElementById("guestbook-toggle");
+    var wrap = document.getElementById("guestbook");
+    var status = document.getElementById("guestbook-status");
+    var list = document.getElementById("guestbook-list");
+    var loaded = false;
+
+    function renderEntries(entries) {
+      list.innerHTML = "";
+      if (!entries.length) {
+        status.textContent = "No responses yet — be the first!";
+        return;
+      }
+      status.textContent = entries.length + " response" + (entries.length === 1 ? "" : "s") + " so far";
+      entries.forEach(function (entry) {
+        var meta = statusMeta(entry.attendance);
+        var li = document.createElement("li");
+        li.className = "guestbook__item";
+        li.innerHTML =
+          '<div class="guestbook__row">' +
+            '<span class="guestbook__name">' + escapeHTML(entry.name || "Guest") + "</span>" +
+            '<span class="guestbook__badge" data-status="' + meta.key + '">' + escapeHTML(meta.text) + "</span>" +
+          "</div>" +
+          (entry.comment ? '<p class="guestbook__comment">' + escapeHTML(entry.comment) + "</p>" : "");
+        list.appendChild(li);
+      });
+    }
+
+    function load() {
+      if (loaded) return;
+      if (!CFG.rsvpEndpoint || CFG.rsvpEndpoint.indexOf("PASTE_YOUR") === 0) {
+        status.setAttribute("data-state", "err");
+        status.textContent = "RSVP endpoint isn't configured yet (see /other/README.md).";
+        return;
+      }
+      status.textContent = "Loading…";
+      status.removeAttribute("data-state");
+      fetch(CFG.rsvpEndpoint)
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          loaded = true;
+          renderEntries(data.entries || []);
+        })
+        .catch(function () {
+          status.setAttribute("data-state", "err");
+          status.textContent = "Couldn't load the guest list right now.";
+        });
+    }
+
+    function setOpen(open) {
+      wrap.hidden = !open;
+      toggle.textContent = open ? "Hide guest list" : "Show guest list";
+      toggle.setAttribute("aria-expanded", String(open));
+      if (open) load();
+    }
+
+    toggle.addEventListener("click", function () { setOpen(wrap.hidden); });
+    setOpen(!!(CFG.guestbook && CFG.guestbook.openByDefault));
+  }
+
   /* ───────────────────────── GATE ───────────────────────── */
   function initGate() {
     var gate = document.getElementById("gate");
@@ -325,12 +432,14 @@
   /* ───────────────────────── INIT ───────────────────────── */
   document.addEventListener("DOMContentLoaded", function () {
     populateContent();
+    prepareGuestbookPanel();   // must run before initPagination counts panels
     initTheme();
     initCountdown();
     initParallax();
     initPagination();
     initMusic();
     initRSVP();
+    initGuestbook();
     initGate();
   });
 })();
