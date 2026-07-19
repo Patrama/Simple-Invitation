@@ -9,25 +9,25 @@ window.EVENT = {
 
   // "single"  -> one name (birthday, graduation, solo event…)
   // "double"  -> two names joined by an ampersand (wedding, engagement…)
-  mode: "single",
+  mode: "double",
 
-  eyebrow: "it's my turning two birthday",
+  eyebrow: "You're invited to celebrate",
   names: {
-    single: "Zayn Elhaziq Agatra",
+    single: "Alex Rivera",
     first: "Alex",
     second: "Jordan"
   },
 
   // Shown under the name(s) on the cover panel.
-  tagline: "Come celebrate my special day!",
+  tagline: "We're getting married and we want you there.",
 
   // ISO 8601, include timezone offset so the countdown is correct
   // for guests in other timezones.
-  dateTimeISO: "2026-07-24T16:00:00+07:00",
+  dateTimeISO: "2026-12-12T16:00:00+07:00",
 
   // Human-readable strings shown near the countdown (kept separate
   // from dateTimeISO so wording can differ from the raw date).
-  dateLabel: "Saturday, 24 July 2026",
+  dateLabel: "Saturday, 12 December 2026",
   timeLabel: "4:00 PM – Reception to follow",
 
   location: {
@@ -41,7 +41,7 @@ window.EVENT = {
   // RSVP submissions are posted to a Google Apps Script Web App,
   // which appends each response as a row in a Google Sheet.
   // See /other/README.md + /other/apps-script.gs for setup.
-  rsvpEndpoint: "https://script.google.com/macros/s/AKfycbziKVAZO-LRzPGpFcyEL-LGLD_6WsHqappu-TQrB6YEqANrHAqFcF16Xum1HvHo6JH5/exec",
+  rsvpEndpoint: "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE",
 
   // Controls the public "who's coming" guestbook panel, which reads
   // back names, attendance, and comments from the same Sheet.
@@ -97,7 +97,7 @@ window.EVENT = {
   // /audio folder — keep it short and loop-friendly, and please only
   // use music you have the rights to use.
   music: {
-    src: "img/bg.mp3",
+    src: "img/background-music.mp3",
     title: "Background music"
   },
 
@@ -105,7 +105,7 @@ window.EVENT = {
   // character on the cover panel. Set kind to "video" or "image".
   feature: {
     kind: "image",
-    src: "img/Ptr Junior.webp",
+    src: "img/feature-placeholder.svg",
     alt: "Photo of the celebrating couple"
   },
 
@@ -113,7 +113,7 @@ window.EVENT = {
     // "system" respects the guest's device setting on first visit;
     // they can still override it with the toggle.
     default: "system"
-  }
+  },
 
   parallax: {
     // Multiplies every layer's built-in depth (the data-depth values
@@ -122,6 +122,6 @@ window.EVENT = {
     // layers moving less than foreground ones, which is what actually
     // reads as depth — a flat px boost added equally to every layer
     // instead flattens them to the same distance and kills the effect.
-    strength: 3
+    strength: 1
   }
 };
