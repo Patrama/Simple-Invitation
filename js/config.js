@@ -122,6 +122,6 @@ window.EVENT = {
     // layers moving less than foreground ones, which is what actually
     // reads as depth — a flat px boost added equally to every layer
     // instead flattens them to the same distance and kills the effect.
-    strength: 1
+    strength: 3
   }
 };
