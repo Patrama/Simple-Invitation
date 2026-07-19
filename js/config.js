@@ -13,9 +13,9 @@ window.EVENT = {
 
   eyebrow: "This is my two year birthday invitation",
   names: {
-    single: "Alex Rivera",
-    first: "Alex",
-    second: "Jordan"
+    single: "Zayn Elhaziq Agatra",
+    first: "Zayn",
+    second: "Elhaziq Agatra"
   },
 
   // Shown under the name(s) on the cover panel.
@@ -34,7 +34,7 @@ window.EVENT = {
     venueName: "The Garden Pavilion",
     address: "Jl. Contoh Raya No. 88, Jakarta",
     // Google Maps -> Share -> Embed a map -> copy the src="" URL here.
-    mapEmbedSrc: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.99!2d106.8272!3d-6.1754!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwMTAnMzEuNCJTIDEwNsKwNDknMzguMSJF!5e0!3m2!1sen!2sid!4v0",
+    mapEmbedSrc: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3957.986472214097!2d112.63531257371609!3d-7.242377592764013!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd7ff0db8952189%3A0x2f2c07d80ee5c13!2sTimeography!5e0!3m2!1sen!2sid!4v1784458240449!5m2!1sen!2sid",
     directionsUrl: "https://maps.google.com/?q=The+Garden+Pavilion+Jakarta"
   },
 
