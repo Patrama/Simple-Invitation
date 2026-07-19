@@ -13,7 +13,7 @@ window.EVENT = {
 
   eyebrow: "This is my two year birthday invitation",
   names: {
-    single: "Zayn Elhaziq Agatra",
+    single: "Zayn Elhaziq Agatr",
     first: "Zayn",
     second: "Elhaziq Agatra"
   },
