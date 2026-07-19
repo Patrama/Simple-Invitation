@@ -164,6 +164,8 @@
     var targetState = { nx: 0, ny: 0 };
     var raf = null;
 
+    var strength = (CFG.parallax && typeof CFG.parallax.strength === "number") ? CFG.parallax.strength : 1;
+
     function render() {
       // ease toward the target each frame — smoother than snapping
       // straight to the pointer/tilt reading, and reads as "depth"
@@ -171,7 +173,7 @@
       current.nx += (targetState.nx - current.nx) * 0.12;
       current.ny += (targetState.ny - current.ny) * 0.12;
       layers.forEach(function (layer) {
-        var depth = parseFloat(layer.getAttribute("data-depth")) || 20;
+        var depth = (parseFloat(layer.getAttribute("data-depth")) || 20) * strength;
         var x = current.nx * depth;
         var y = current.ny * depth;
         layer.style.transform = "translate3d(" + x.toFixed(1) + "px," + y.toFixed(1) + "px,0)";
@@ -395,15 +397,37 @@
       }
       status.textContent = "Loading…";
       status.removeAttribute("data-state");
-      fetch(CFG.rsvpEndpoint)
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
+
+      fetch(CFG.rsvpEndpoint, { cache: "no-store" })
+        .then(function (r) {
+          if (!r.ok) throw new Error("http-" + r.status);
+          return r.text();
+        })
+        .then(function (text) {
+          var data;
+          try {
+            data = JSON.parse(text);
+          } catch (parseErr) {
+            // Apps Script most often returns HTML instead of JSON when
+            // the deployment hasn't been redeployed since doGet was
+            // added, or "Who has access" isn't set to Anyone.
+            console.error("Guestbook: response wasn't JSON —", text.slice(0, 300));
+            throw new Error("not-json");
+          }
+          if (data.ok === false) throw new Error(data.error || "script-error");
           loaded = true;
           renderEntries(data.entries || []);
         })
-        .catch(function () {
+        .catch(function (err) {
+          console.error("Guestbook load failed:", err);
           status.setAttribute("data-state", "err");
-          status.textContent = "Couldn't load the guest list right now.";
+          if (String(err.message).indexOf("not-json") === 0) {
+            status.textContent = "The script returned an unexpected response — usually means it needs redeploying as a new version (see /other/README.md).";
+          } else if (String(err.message).indexOf("http-") === 0) {
+            status.textContent = "The script responded with an error (" + err.message.replace("http-", "HTTP ") + ").";
+          } else {
+            status.textContent = "Couldn't reach the guest list right now — check the endpoint URL and deployment access in /other/README.md.";
+          }
         });
     }
 

@@ -97,7 +97,7 @@ window.EVENT = {
   // /audio folder — keep it short and loop-friendly, and please only
   // use music you have the rights to use.
   music: {
-    src: "img/background-music.mp3",
+    src: "img/bg.mp3",
     title: "Background music"
   },
 
@@ -113,5 +113,15 @@ window.EVENT = {
     // "system" respects the guest's device setting on first visit;
     // they can still override it with the toggle.
     default: "system"
+  }
+
+  parallax: {
+    // Multiplies every layer's built-in depth (the data-depth values
+    // in index.html — 14 to 48px by default). 1 = as designed, 2 =
+    // twice the drift, 0.5 = half. Scaling this way keeps background
+    // layers moving less than foreground ones, which is what actually
+    // reads as depth — a flat px boost added equally to every layer
+    // instead flattens them to the same distance and kills the effect.
+    strength: 1
   }
 };
