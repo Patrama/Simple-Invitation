@@ -1,0 +1,481 @@
+/* ─────────────────────────────────────────────────────────────
+   DESIGN TOKENS
+   A paper pop-up card: layered arches, deckle edges, confetti.
+   Same teal / coral / gold family in both themes, just inverted
+   in luminance — sunlit paper by day, paper lantern by night.
+───────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: "Fraunces";
+  src: local("Fraunces");
+}
+
+:root {
+  --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-body: "Work Sans", -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-script: "Caveat", "Segoe Script", cursive;
+
+  --radius-sm: 10px;
+  --radius-md: 18px;
+  --radius-lg: 28px;
+
+  --ease-card: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 0.2s;
+  --dur-med: 0.5s;
+  --dur-slow: 0.9s;
+
+  --teal: #123c42;
+  --coral: #e8674a;
+  --gold: #c9a227;
+}
+
+:root[data-theme="light"] {
+  --bg: #f6e6de;
+  --bg-elevated: #fffdf9;
+  --ink: #1b2340;
+  --ink-soft: #5a5f7a;
+  --accent: #e8674a;
+  --accent-2: #c9a227;
+  --paper: #123c42;
+  --line: rgba(27, 35, 64, 0.14);
+  --shadow: 0 18px 40px rgba(27, 35, 64, 0.14);
+}
+
+:root[data-theme="dark"] {
+  --bg: #101a20;
+  --bg-elevated: #1b2b32;
+  --ink: #f3e9dc;
+  --ink-soft: #c9bfae;
+  --accent: #f2865f;
+  --accent-2: #e4c25e;
+  --paper: #f3e9dc;
+  --line: rgba(243, 233, 220, 0.16);
+  --shadow: 0 18px 44px rgba(0, 0, 0, 0.45);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;                 /* no scrolling, anywhere */
+  overscroll-behavior: none;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  height: 100dvh;
+  width: 100vw;
+  position: relative;
+}
+
+img, svg { display: block; max-width: 100%; }
+button { font-family: inherit; }
+
+::selection { background: var(--accent); color: var(--bg-elevated); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   PANEL STACK  (paged, no scrollbars — swipe / wheel / keys / dots)
+───────────────────────────────────────────────────────────── */
+.panels {
+  position: absolute;
+  inset: 0;
+  height: 100dvh;
+  width: 100vw;
+  transition: transform var(--dur-slow) var(--ease-card);
+  will-change: transform;
+}
+
+.panel {
+  position: relative;
+  height: 100dvh;
+  width: 100vw;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(20px, 5vh, 56px) clamp(20px, 6vw, 72px);
+  isolation: isolate;
+}
+
+.panel__inner {
+  position: relative;
+  z-index: 2;
+  width: min(560px, 100%);
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: clamp(10px, 2vh, 20px);
+}
+
+/* Deckle / torn-paper divider between stacked panels */
+.panel::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  height: 22px;
+  background: var(--bg);
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 20' preserveAspectRatio='none'%3E%3Cpath d='M0 20 L0 8 Q 5 0 10 8 T 20 8 T 30 8 T 40 8 T 50 8 T 60 8 T 70 8 T 80 8 T 90 8 T 100 8 T 110 8 T 120 8 T 130 8 T 140 8 T 150 8 T 160 8 T 170 8 T 180 8 T 190 8 T 200 8 L200 20 Z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 20' preserveAspectRatio='none'%3E%3Cpath d='M0 20 L0 8 Q 5 0 10 8 T 20 8 T 30 8 T 40 8 T 50 8 T 60 8 T 70 8 T 80 8 T 90 8 T 100 8 T 110 8 T 120 8 T 130 8 T 140 8 T 150 8 T 160 8 T 170 8 T 180 8 T 190 8 T 200 8 L200 20 Z'/%3E%3C/svg%3E");
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  z-index: 3;
+  pointer-events: none;
+}
+.panel:last-child::after { display: none; }
+
+/* ─────────────────────────────────────────────────────────────
+   PARALLAX LAYERS
+───────────────────────────────────────────────────────────── */
+.parallax-layer {
+  position: absolute;
+  inset: -6%;
+  z-index: 1;
+  pointer-events: none;
+  transition: transform 0.15s linear;
+  will-change: transform;
+}
+.parallax-layer.is-fg { z-index: 3; }
+
+/* ─────────────────────────────────────────────────────────────
+   TYPE
+───────────────────────────────────────────────────────────── */
+.eyebrow {
+  font-family: var(--font-script);
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  color: var(--accent);
+  margin: 0;
+}
+
+h1.title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2.1rem, 8vw, 3.6rem);
+  line-height: 1.05;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+h1.title .amp {
+  display: block;
+  font-family: var(--font-script);
+  font-weight: 400;
+  font-size: 0.5em;
+  color: var(--accent-2);
+  margin: 0.1em 0;
+}
+
+.panel h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.6rem, 5vw, 2.3rem);
+  margin: 0;
+}
+
+.lede {
+  font-size: clamp(0.95rem, 2.4vw, 1.1rem);
+  color: var(--ink-soft);
+  max-width: 42ch;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SIGNATURE ARCH FRAME (cover panel feature media)
+───────────────────────────────────────────────────────────── */
+.arch-frame {
+  position: relative;
+  width: min(64vw, 260px);
+  aspect-ratio: 3 / 4;
+  margin: 0 auto;
+}
+.arch-frame__stage {
+  position: absolute;
+  inset: 0;
+  border-radius: 130px 130px 14px 14px;
+  overflow: hidden;
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow);
+  border: 3px solid var(--paper);
+}
+.arch-frame__stage img,
+.arch-frame__stage video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.arch-frame__ring {
+  position: absolute;
+  inset: -14px;
+  border-radius: 140px 140px 24px 24px;
+  border: 2px dashed var(--accent-2);
+  opacity: 0.6;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   BUTTONS
+───────────────────────────────────────────────────────────── */
+.btn {
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-radius: 999px;
+  padding: 0.9em 1.8em;
+  color: var(--bg-elevated);
+  background: var(--accent);
+  box-shadow: var(--shadow);
+  transition: transform var(--dur-fast) var(--ease-card);
+}
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(0); }
+.btn:focus-visible, button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 3px;
+}
+.btn--ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1.5px solid var(--line);
+  box-shadow: none;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   COVER PANEL
+───────────────────────────────────────────────────────────── */
+.cover .panel__inner { gap: clamp(14px, 2.4vh, 22px); }
+
+/* ─────────────────────────────────────────────────────────────
+   COUNTDOWN
+───────────────────────────────────────────────────────────── */
+.countdown {
+  display: grid;
+  grid-auto-flow: column;
+  gap: clamp(8px, 2vw, 16px);
+}
+.countdown__unit {
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+  padding: clamp(10px, 2.4vw, 18px) clamp(8px, 2vw, 14px);
+  min-width: 64px;
+}
+.countdown__num {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 5.5vw, 2.4rem);
+  font-weight: 600;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+.countdown__label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+}
+.date-card {
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+  padding: 14px 22px;
+}
+.date-card strong { display: block; font-family: var(--font-display); font-size: 1.05rem; }
+.date-card span { color: var(--ink-soft); font-size: 0.9rem; }
+
+/* ─────────────────────────────────────────────────────────────
+   LOCATION
+───────────────────────────────────────────────────────────── */
+.map-frame {
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  border: 3px solid var(--bg-elevated);
+}
+.map-frame iframe { width: 100%; height: 100%; border: 0; }
+
+/* ─────────────────────────────────────────────────────────────
+   RSVP
+───────────────────────────────────────────────────────────── */
+.rsvp-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.field {
+  text-align: left;
+}
+.field input,
+.field textarea {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  padding: 0.75em 1em;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--line);
+  background: var(--bg-elevated);
+  color: var(--ink);
+  resize: none;
+}
+.field textarea { min-height: 64px; }
+
+.attend-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.attend-option { position: relative; }
+.attend-option input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+.attend-option span {
+  display: inline-block;
+  padding: 0.55em 1.1em;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  transition: all var(--dur-fast) var(--ease-card);
+}
+.attend-option input:checked + span {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg-elevated);
+}
+.attend-option input:focus-visible + span { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+
+.rsvp-status {
+  font-size: 0.85rem;
+  min-height: 1.2em;
+  color: var(--ink-soft);
+}
+.rsvp-status[data-state="ok"] { color: var(--accent); font-weight: 600; }
+.rsvp-status[data-state="err"] { color: var(--coral); font-weight: 600; }
+
+/* ─────────────────────────────────────────────────────────────
+   GIFTS
+───────────────────────────────────────────────────────────── */
+.gift-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--gift-count, 2), 1fr);
+  gap: 12px;
+  width: 100%;
+}
+@media (max-width: 640px) {
+  .gift-grid { grid-template-columns: 1fr; }
+}
+.gift-card {
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+.gift-card__label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-2);
+  font-weight: 700;
+}
+.gift-card__name { font-family: var(--font-display); font-size: 1rem; }
+.gift-card__detail { font-size: 0.85rem; color: var(--ink-soft); word-break: break-word; }
+.gift-card__note { font-size: 0.72rem; color: var(--ink-soft); opacity: 0.8; }
+.gift-card__qr { width: 100%; max-width: 120px; margin: 4px auto; border-radius: var(--radius-sm); }
+.gift-card__copy {
+  align-self: flex-start;
+  margin-top: 2px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   THANK YOU
+───────────────────────────────────────────────────────────── */
+.thankyou h2 { font-size: clamp(2rem, 7vw, 3rem); }
+
+/* ─────────────────────────────────────────────────────────────
+   CHROME: theme + music toggles, dot nav
+───────────────────────────────────────────────────────────── */
+.chrome-btn {
+  position: fixed;
+  z-index: 20;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  background: var(--bg-elevated);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+.chrome-btn svg { width: 20px; height: 20px; }
+#theme-toggle { top: max(16px, env(safe-area-inset-top)); right: 16px; }
+#music-toggle { top: max(16px, env(safe-area-inset-top)); left: 16px; }
+#music-toggle.is-playing svg { animation: spin 3.2s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.dot-nav {
+  position: fixed;
+  z-index: 20;
+  right: max(14px, env(safe-area-inset-right));
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.dot-nav button {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1.5px solid var(--accent);
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+.dot-nav button[aria-current="true"] { background: var(--accent); }
+
+@media (max-width: 480px) {
+  .dot-nav { right: 10px; gap: 8px; }
+}
+
+/* Cover-only open gate */
+#gate {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  transition: opacity var(--dur-slow) var(--ease-card), visibility var(--dur-slow);
+}
+#gate.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
